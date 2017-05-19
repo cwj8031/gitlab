@@ -1,0 +1,5 @@
+#/bin/bash
+#
+#Author:galaxy
+#Description: remove gitlab rebundant files
+find /data/gitlab-production-backups/* ! -ctime -7 -exec rm {} \;
