@@ -1,0 +1,104 @@
+version: '2'
+
+services:
+  redis:
+    restart: always
+    image: redis:3.2.0
+    command:
+    - --loglevel warning
+    volumes:
+    - /data/gitlab/redis:/var/lib/redis:Z
+
+  postgresql:
+    restart: always
+    image: postgresql:9.4-22
+    volumes:
+    - /data/gitlab/postgresql:/var/lib/postgresql:Z
+    environment:
+    - DB_USER=gitlab
+    - DB_PASS=JKv+NP4S_E
+    - DB_NAME=gitlabhq
+    - DB_EXTENSION=pg_trgm
+
+  gitlab:
+    restart: always
+    image: gitlab:8.8.5-1
+    depends_on:
+    - redis
+    - postgresql
+    ports:
+    - "80:80"
+    - "22:22"
+    volumes:
+    - /data/gitlab/gitlab:/home/git/data:Z
+    environment:
+    - DEBUG=false
+
+    - DB_ADAPTER=postgresql
+    - DB_HOST=postgresql
+    - DB_PORT=5432
+    - DB_USER=gitlab
+    - DB_PASS=JKv+NP4S_E
+    - DB_NAME=gitlabhq
+
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+
+    - TZ=Asia/Shanghai
+    - GITLAB_TIMEZONE=Beijing
+
+    - GITLAB_HTTPS=false
+    - SSL_SELF_SIGNED=false
+
+    - GITLAB_HOST=gitlab.droi.com
+    - GITLAB_PORT=80
+    - GITLAB_SSH_PORT=22
+    - GITLAB_RELATIVE_URL_ROOT=
+    - GITLAB_SECRETS_DB_KEY_BASE=VCXvWzzkxbNwjwXFb3dX49T3rL9jvrtrrbzrqgW4qmbVgpcWLnkgbNfwbdfwP9Wn
+    - GITLAB_SIGNUP_ENABLED=false
+    - GITLAB_ROOT_PASSWORD=qtBaPRWz+j
+    - GITLAB_ROOT_EMAIL=gitlab-ad@droi.com
+
+    - GITLAB_NOTIFY_ON_BROKEN_BUILDS=true
+    - GITLAB_NOTIFY_PUSHER=false
+
+    - GITLAB_EMAIL=gitlab-ad@droi.com
+    - GITLAB_EMAIL_DISPLAY_NAME=Gitlab
+    - GITLAB_EMAIL_REPLY_TO=gitlab-ad@droi.com
+    - GITLAB_INCOMING_EMAIL_ADDRESS=USER+%{key}@droi.com
+
+    - GITLAB_BACKUP_SCHEDULE=daily
+    - GITLAB_BACKUP_TIME=04:00
+
+    - SMTP_ENABLED=true
+    - SMTP_DOMAIN=droi.com
+    - SMTP_HOST=mail.droi.com
+    - SMTP_PORT=25
+    - SMTP_USER=gitlab@droi.com
+    - SMTP_PASS=Ej+1+qwzv7
+    - SMTP_STARTTLS=true
+    - SMTP_AUTHENTICATION=login
+
+    - IMAP_ENABLED=true
+    - IMAP_HOST=mail.droi.com
+    - IMAP_PORT=993
+    - IMAP_USER=gitlab@droi.com
+    - IMAP_PASS=Ej+1+qwzv7
+    - IMAP_SSL=false
+    - LDAP_ENABLED=true
+    - LDAP_LABEL=LDAP
+    #- LDAP_HOST=ldap.droi.com
+    - LDAP_HOST=droi.com
+    - LDAP_PORT=389
+    #- LDAP_UID=uid
+    - LDAP_UID=sAMAccountName
+    - LDAP_METHOD=plain
+    #- LDAP_BIND_DN=cn=gitlab,ou=people,dc=droi,dc=com
+    - LDAP_BIND_DN=CN=gitlab-ad,OU=Droi,DC=droi,DC=com
+    - LDAP_PASS=VHhbpq3LqxF7Y63o
+    - LDAP_TIMEOUT=10
+    #- LDAP_BASE=ou=people,dc=droi,dc=com
+    - LDAP_BASE=OU=Droi,DC=droi,DC=com
+    - LDAP_ACTIVE_DIRECTORY=true
+    - LDAP_ALLOW_USERNAME_OR_EMAIL_LOGIN=true
+    - LDAP_LOCK_AUTO_CREATED_USERS=false
